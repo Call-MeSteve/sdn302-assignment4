@@ -97,6 +97,7 @@ const quizSlice = createSlice({
   initialState: {
     questions: [],
     quizzes: [],
+    selectedQuiz: null,
     loading: false,
     quizLoading: false,
     error: null,
@@ -109,6 +110,22 @@ const quizSlice = createSlice({
   reducers: {
     selectOption: (state, action) => {
       state.selectedOptionIndex = action.payload;
+    },
+    startSelectedQuiz: (state, action) => {
+      const quiz = action.payload;
+      state.selectedQuiz = quiz;
+      state.questions = quiz.questions || [];
+      state.currentQuestionIndex = 0;
+      state.selectedOptionIndex = null;
+      state.score = 0;
+      state.quizCompleted = false;
+    },
+    exitQuiz: (state) => {
+      state.selectedQuiz = null;
+      state.currentQuestionIndex = 0;
+      state.selectedOptionIndex = null;
+      state.score = 0;
+      state.quizCompleted = false;
     },
     submitAnswer: (state) => {
       if (state.selectedOptionIndex === null) return;
@@ -201,5 +218,5 @@ const quizSlice = createSlice({
   }
 });
 
-export const { selectOption, submitAnswer, restartQuiz } = quizSlice.actions;
+export const { selectOption, submitAnswer, restartQuiz, startSelectedQuiz, exitQuiz } = quizSlice.actions;
 export default quizSlice.reducer;
