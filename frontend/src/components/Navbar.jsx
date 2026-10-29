@@ -41,13 +41,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
               Manage Quizzes
             </span>
             <span 
-              className={`text-decoration-none fw-medium ${activeTab === 'articles' ? 'text-primary fw-bold' : 'text-dark'}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => setActiveTab && setActiveTab('articles')}
-            >
-              Manage Articles
-            </span>
-            <span 
               className="text-decoration-none text-dark fw-medium" 
               style={{ cursor: 'pointer' }} 
               onClick={handleLogout}
@@ -59,13 +52,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <>
             <Link to="/dashboard" className="text-decoration-none text-dark fw-medium">Home</Link>
             <Link to="/dashboard/quiz" className="text-decoration-none text-dark fw-medium">Quiz</Link>
-            <span 
-              className="text-decoration-none text-dark fw-medium" 
-              style={{ cursor: 'pointer' }}
-              onClick={() => setActiveTab && setActiveTab('article')}
-            >
-              Article
-            </span>
             <span 
               className="text-decoration-none text-dark fw-medium" 
               style={{ cursor: 'pointer' }} 

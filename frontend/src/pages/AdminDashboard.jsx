@@ -416,13 +416,6 @@ const AdminDashboard = () => {
             )}
           </>
         )}
-
-        {activeTab === 'articles' && (
-          <div className="card p-4 border rounded shadow-sm">
-            <h4 className="fw-bold mb-3">Manage Articles</h4>
-            <p className="text-secondary">Articles management interface for administrators.</p>
-          </div>
-        )}
       </div>
     </div>
   );
