@@ -1,0 +1,359 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Assignment 1 - SimpleQuiz REST API",
+    "description": "Postman Collection for SDN302 Assignment 1 covering all 5 tasks (Quizzes, Questions, Populate with Match, Single & Multiple Question Addition).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "quizId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "questionId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Task 1 & 2 - Quizzes CRUD",
+      "item": [
+        {
+          "name": "GET All Quizzes (Populated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes"
+              ]
+            },
+            "description": "Lấy danh sách tất cả bài quiz, populate toàn bộ thông tin chi tiết từng câu hỏi."
+          }
+        },
+        {
+          "name": "POST Create Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"History Quiz\",\n  \"description\": \"Test your knowledge of scientific concepts!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes"
+              ]
+            },
+            "description": "Tạo mới bài quiz, trả về 'Added the quiz with id: <id>' theo đúng demo đề bài."
+          }
+        },
+        {
+          "name": "GET Quiz by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}"
+              ]
+            },
+            "description": "Lấy thông tin chi tiết của bài quiz theo ID."
+          }
+        },
+        {
+          "name": "PUT Update Quiz by ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"History Quiz Updated\",\n  \"description\": \"Updated description for history test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}"
+              ]
+            },
+            "description": "Cập nhật bài quiz theo ID."
+          }
+        },
+        {
+          "name": "DELETE Quiz by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}"
+              ]
+            },
+            "description": "Xóa bài quiz theo ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task 1 & 2 - Questions CRUD",
+      "item": [
+        {
+          "name": "GET All Questions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/questions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "questions"
+              ]
+            },
+            "description": "Lấy danh sách tất cả các câu hỏi."
+          }
+        },
+        {
+          "name": "POST Create Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"What is the capital of France?\",\n  \"options\": [\n    \"Paris\",\n    \"London\",\n    \"Berlin\",\n    \"Madrid\"\n  ],\n  \"keywords\": [\"capital\", \"france\"],\n  \"correctAnswerIndex\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/questions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "questions"
+              ]
+            },
+            "description": "Tạo câu hỏi mới độc lập."
+          }
+        },
+        {
+          "name": "GET Question by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/questions/{{questionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "questions",
+                "{{questionId}}"
+              ]
+            },
+            "description": "Lấy câu hỏi theo ID."
+          }
+        },
+        {
+          "name": "PUT Update Question by ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"What is the capital city of France?\",\n  \"options\": [\n    \"Paris\",\n    \"London\",\n    \"Berlin\",\n    \"Rome\"\n  ],\n  \"correctAnswerIndex\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/questions/{{questionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "questions",
+                "{{questionId}}"
+              ]
+            },
+            "description": "Cập nhật câu hỏi theo ID."
+          }
+        },
+        {
+          "name": "DELETE Question by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/questions/{{questionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "questions",
+                "{{questionId}}"
+              ]
+            },
+            "description": "Xóa câu hỏi theo ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task 3 - Filter Questions With Populate (capital)",
+      "item": [
+        {
+          "name": "GET Quiz Populate Capital Questions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}/populate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}",
+                "populate"
+              ]
+            },
+            "description": "Lấy bài quiz theo quizId và populate questions, nhưng chỉ lấy câu hỏi có chứa từ 'capital' trong text."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task 4 - Add Single Question to Quiz",
+      "item": [
+        {
+          "name": "POST Add Question to Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"What is the capital of France?\",\n  \"options\": [\n    \"Paris\",\n    \"London\",\n    \"Berlin\",\n    \"Madrid\"\n  ],\n  \"correctAnswerIndex\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}/question",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}",
+                "question"
+              ]
+            },
+            "description": "Tạo 1 câu hỏi mới, lưu vào Question, thêm _id vào Quiz, trả về câu hỏi vừa tạo (201 Created)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task 5 - Add Multiple Questions to Quiz",
+      "item": [
+        {
+          "name": "POST Add Many Questions to Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"text\": \"What is the capital of Germany?\",\n    \"options\": [\n      \"Paris\",\n      \"London\",\n      \"Berlin\",\n      \"Madrid\"\n    ],\n    \"correctAnswerIndex\": 2\n  },\n  {\n    \"text\": \"What is the capital of England?\",\n    \"options\": [\n      \"Paris\",\n      \"London\",\n      \"Berlin\",\n      \"Madrid\"\n    ],\n    \"correctAnswerIndex\": 1\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}/questions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}",
+                "questions"
+              ]
+            },
+            "description": "Tạo nhiều câu hỏi từ mảng trong req.body, lưu vào DB, đẩy _id vào Quiz, trả về {'message': 'Questions added successfully.'}."
+          }
+        },
+        {
+          "name": "DELETE Remove Question from Quiz",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quizzes/{{quizId}}/questions/{{questionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quizzes",
+                "{{quizId}}",
+                "questions",
+                "{{questionId}}"
+              ]
+            },
+            "description": "Gỡ bỏ 1 câu hỏi khỏi bài quiz (chỉ xóa liên kết trong mảng questions của quiz, không xóa mất câu hỏi trong database)."
+          }
+        }
+      ]
+    }
+  ]
+}
