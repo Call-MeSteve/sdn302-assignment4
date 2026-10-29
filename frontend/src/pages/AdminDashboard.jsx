@@ -1,23 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Navbar from '../components/Navbar';
-import { fetchQuestions, addQuestion, updateQuestion, deleteQuestion } from '../redux/quizSlice';
+import {
+  fetchQuestions,
+  addQuestion,
+  updateQuestion,
+  deleteQuestion,
+  fetchQuizzes,
+  createQuiz,
+  updateQuiz,
+  deleteQuiz,
+  addQuestionToQuiz,
+  removeQuestionFromQuiz
+} from '../redux/quizSlice';
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
-  const { questions, loading } = useSelector((state) => state.quiz);
+  const { questions, quizzes, loading, quizLoading } = useSelector((state) => state.quiz);
 
   const [activeTab, setActiveTab] = useState('questions');
 
-  // Form states
+  // Question Form states
   const [editingId, setEditingId] = useState(null);
   const [questionText, setQuestionText] = useState('');
   const [options, setOptions] = useState(['', '', '', '']);
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState(0);
   const [formError, setFormError] = useState('');
 
+  // Quiz Form states
+  const [quizTitle, setQuizTitle] = useState('');
+  const [quizDescription, setQuizDescription] = useState('');
+  const [editingQuizId, setEditingQuizId] = useState(null);
+  const [selectedQuestionToAdd, setSelectedQuestionToAdd] = useState({});
+  const [quizFormError, setQuizFormError] = useState('');
+
   useEffect(() => {
     dispatch(fetchQuestions());
+    dispatch(fetchQuizzes());
   }, [dispatch]);
 
   const handleOptionChange = (index, value) => {
@@ -77,6 +96,53 @@ const AdminDashboard = () => {
     }
 
     resetForm();
+  };
+
+  // Quiz Handlers
+  const handleQuizSubmit = async (e) => {
+    e.preventDefault();
+    setQuizFormError('');
+
+    if (!quizTitle.trim()) {
+      setQuizFormError('Please enter Quiz title');
+      return;
+    }
+
+    if (editingQuizId) {
+      await dispatch(updateQuiz({ id: editingQuizId, quizData: { title: quizTitle.trim(), description: quizDescription.trim() } }));
+    } else {
+      await dispatch(createQuiz({ title: quizTitle.trim(), description: quizDescription.trim() }));
+    }
+
+    setEditingQuizId(null);
+    setQuizTitle('');
+    setQuizDescription('');
+  };
+
+  const handleEditQuiz = (q) => {
+    setEditingQuizId(q._id);
+    setQuizTitle(q.title);
+    setQuizDescription(q.description || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteQuiz = (id) => {
+    if (window.confirm('Are you sure you want to delete this quiz?')) {
+      dispatch(deleteQuiz(id));
+    }
+  };
+
+  const handleAddQuestionToQuiz = async (quizId) => {
+    const qId = selectedQuestionToAdd[quizId];
+    if (!qId) return;
+    await dispatch(addQuestionToQuiz({ quizId, questionId: qId }));
+    setSelectedQuestionToAdd({ ...selectedQuestionToAdd, [quizId]: '' });
+  };
+
+  const handleRemoveQuestionFromQuiz = async (quizId, questionId) => {
+    if (window.confirm('Remove this question from the quiz?')) {
+      await dispatch(removeQuestionFromQuiz({ quizId, questionId }));
+    }
   };
 
   return (
@@ -186,6 +252,160 @@ const AdminDashboard = () => {
                       <button
                         className="btn btn-danger btn-sm px-3 fw-medium"
                         onClick={() => handleDeleteClick(q._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'quizzes' && (
+          <>
+            {/* Quizzes Form Section matching screenshot */}
+            <h2 className="fw-bold mb-4">Quizzes</h2>
+
+            <div className="card p-4 border rounded shadow-sm mb-4">
+              {quizFormError && (
+                <div className="alert alert-danger py-2 small">{quizFormError}</div>
+              )}
+
+              <form onSubmit={handleQuizSubmit}>
+                <div className="mb-3">
+                  <label className="form-label text-dark fw-medium mb-1">Title</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={quizTitle}
+                    onChange={(e) => setQuizTitle(e.target.value)}
+                    placeholder=""
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label text-dark fw-medium mb-1">Description</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={quizDescription}
+                    onChange={(e) => setQuizDescription(e.target.value)}
+                    placeholder=""
+                    required
+                  ></textarea>
+                </div>
+
+                <div className="d-flex gap-2">
+                  <button type="submit" className="btn btn-primary px-4">
+                    {editingQuizId ? 'Update Quiz' : 'Add Quiz'}
+                  </button>
+                  {editingQuizId && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary px-3"
+                      onClick={() => {
+                        setEditingQuizId(null);
+                        setQuizTitle('');
+                        setQuizDescription('');
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            {/* Quizzes List Section */}
+            {quizLoading && quizzes.length === 0 ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-primary" role="status"></div>
+              </div>
+            ) : quizzes.length === 0 ? (
+              <div className="text-center py-4 text-secondary">
+                No Quizzes created yet. Create your first Quiz above!
+              </div>
+            ) : (
+              <div className="d-flex flex-column gap-3">
+                {quizzes.map((quiz) => (
+                  <div key={quiz._id} className="card p-4 border rounded shadow-sm">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h5 className="fw-bold mb-1">{quiz.title}</h5>
+                        <p className="text-secondary small mb-2">{quiz.description}</p>
+                      </div>
+                      <span className="badge bg-primary px-3 py-2">
+                        {quiz.questions?.length || 0} Questions
+                      </span>
+                    </div>
+
+                    {/* Questions in this Quiz */}
+                    {quiz.questions && quiz.questions.length > 0 && (
+                      <div className="bg-light p-3 rounded mb-3 border">
+                        <h6 className="fw-semibold small text-secondary mb-2">Questions in this Quiz:</h6>
+                        <ol className="mb-0 ps-3">
+                          {quiz.questions.map((q, idx) => (
+                            <li key={q._id || idx} className="small mb-1 d-flex justify-content-between align-items-center">
+                              <span>{q.text || 'Question ' + (idx + 1)}</span>
+                              <button
+                                type="button"
+                                className="btn btn-link text-danger p-0 ms-2 text-decoration-none small"
+                                style={{ fontSize: '12px' }}
+                                onClick={() => handleRemoveQuestionFromQuiz(quiz._id, q._id || q)}
+                              >
+                                &times; Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
+                    {/* Add Question to this Quiz select */}
+                    <div className="input-group input-group-sm mb-3" style={{ maxWidth: '480px' }}>
+                      <select
+                        className="form-select"
+                        value={selectedQuestionToAdd[quiz._id] || ''}
+                        onChange={(e) =>
+                          setSelectedQuestionToAdd({
+                            ...selectedQuestionToAdd,
+                            [quiz._id]: e.target.value
+                          })
+                        }
+                      >
+                        <option value="">-- Choose question to add to Quiz --</option>
+                        {questions
+                          .filter((q) => !quiz.questions?.some((qq) => (qq._id || qq) === q._id))
+                          .map((q) => (
+                            <option key={q._id} value={q._id}>
+                              {q.text}
+                            </option>
+                          ))}
+                      </select>
+                      <button
+                        className="btn btn-outline-primary"
+                        type="button"
+                        disabled={!selectedQuestionToAdd[quiz._id]}
+                        onClick={() => handleAddQuestionToQuiz(quiz._id)}
+                      >
+                        Add to Quiz
+                      </button>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div>
+                      <button
+                        className="btn btn-warning btn-sm me-2 text-dark px-3 fw-medium"
+                        onClick={() => handleEditQuiz(quiz)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm px-3 fw-medium"
+                        onClick={() => handleDeleteQuiz(quiz._id)}
                       >
                         Delete
                       </button>

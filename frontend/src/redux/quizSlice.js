@@ -37,11 +37,68 @@ export const deleteQuestion = createAsyncThunk('quiz/deleteQuestion', async (id,
   }
 });
 
+// Quiz Thunks
+export const fetchQuizzes = createAsyncThunk('quiz/fetchQuizzes', async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosClient.get('/quizzes');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to fetch quizzes');
+  }
+});
+
+export const createQuiz = createAsyncThunk('quiz/createQuiz', async (quizData, { rejectWithValue }) => {
+  try {
+    const response = await axiosClient.post('/quizzes', quizData);
+    return response.data.quiz || response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to create quiz');
+  }
+});
+
+export const updateQuiz = createAsyncThunk('quiz/updateQuiz', async ({ id, quizData }, { rejectWithValue }) => {
+  try {
+    const response = await axiosClient.put('/quizzes/' + id, quizData);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to update quiz');
+  }
+});
+
+export const deleteQuiz = createAsyncThunk('quiz/deleteQuiz', async (id, { rejectWithValue }) => {
+  try {
+    await axiosClient.delete('/quizzes/' + id);
+    return id;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to delete quiz');
+  }
+});
+
+export const addQuestionToQuiz = createAsyncThunk('quiz/addQuestionToQuiz', async ({ quizId, questionId }, { rejectWithValue }) => {
+  try {
+    const response = await axiosClient.post(`/quizzes/${quizId}/question`, { questionId });
+    return response.data.quiz || response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to add question to quiz');
+  }
+});
+
+export const removeQuestionFromQuiz = createAsyncThunk('quiz/removeQuestionFromQuiz', async ({ quizId, questionId }, { rejectWithValue }) => {
+  try {
+    await axiosClient.delete(`/quizzes/${quizId}/question/${questionId}`);
+    return { quizId, questionId };
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to remove question from quiz');
+  }
+});
+
 const quizSlice = createSlice({
   name: 'quiz',
   initialState: {
     questions: [],
+    quizzes: [],
     loading: false,
+    quizLoading: false,
     error: null,
     // State for taking Quiz
     currentQuestionIndex: 0,
@@ -104,6 +161,42 @@ const quizSlice = createSlice({
       // Delete
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.questions = state.questions.filter(q => q._id !== action.payload);
+      })
+      // Quizzes
+      .addCase(fetchQuizzes.pending, (state) => {
+        state.quizLoading = true;
+      })
+      .addCase(fetchQuizzes.fulfilled, (state, action) => {
+        state.quizLoading = false;
+        state.quizzes = action.payload;
+      })
+      .addCase(fetchQuizzes.rejected, (state, action) => {
+        state.quizLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(createQuiz.fulfilled, (state, action) => {
+        state.quizzes.push(action.payload);
+      })
+      .addCase(updateQuiz.fulfilled, (state, action) => {
+        const index = state.quizzes.findIndex(q => q._id === action.payload._id);
+        if (index !== -1) {
+          state.quizzes[index] = action.payload;
+        }
+      })
+      .addCase(deleteQuiz.fulfilled, (state, action) => {
+        state.quizzes = state.quizzes.filter(q => q._id !== action.payload);
+      })
+      .addCase(addQuestionToQuiz.fulfilled, (state, action) => {
+        const index = state.quizzes.findIndex(q => q._id === action.payload._id);
+        if (index !== -1) {
+          state.quizzes[index] = action.payload;
+        }
+      })
+      .addCase(removeQuestionFromQuiz.fulfilled, (state, action) => {
+        const quiz = state.quizzes.find(q => q._id === action.payload.quizId);
+        if (quiz) {
+          quiz.questions = quiz.questions.filter(q => (q._id || q) !== action.payload.questionId);
+        }
       });
   }
 });

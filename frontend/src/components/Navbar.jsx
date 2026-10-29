@@ -27,14 +27,21 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <>
             <Link to="/admin" className="text-decoration-none text-dark fw-medium">Home</Link>
             <span 
-              className="text-decoration-none text-dark fw-medium" 
+              className={`text-decoration-none fw-medium ${activeTab === 'questions' ? 'text-primary fw-bold' : 'text-dark'}`}
               style={{ cursor: 'pointer' }}
               onClick={() => setActiveTab && setActiveTab('questions')}
             >
               Manage Questions
             </span>
             <span 
-              className="text-decoration-none text-dark fw-medium" 
+              className={`text-decoration-none fw-medium ${activeTab === 'quizzes' ? 'text-primary fw-bold' : 'text-dark'}`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setActiveTab && setActiveTab('quizzes')}
+            >
+              Manage Quizzes
+            </span>
+            <span 
+              className={`text-decoration-none fw-medium ${activeTab === 'articles' ? 'text-primary fw-bold' : 'text-dark'}`}
               style={{ cursor: 'pointer' }}
               onClick={() => setActiveTab && setActiveTab('articles')}
             >
